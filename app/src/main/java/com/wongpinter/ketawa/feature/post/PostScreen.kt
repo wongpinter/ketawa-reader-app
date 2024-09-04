@@ -1,5 +1,7 @@
 package com.wongpinter.ketawa.feature.post
 
+import android.widget.Toast
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -18,6 +20,8 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.wongpinter.ketawa.domain.model.Post
@@ -81,6 +85,7 @@ private fun PostContent(
     onPreviousClick: () -> Unit,
     onNextClick: () -> Unit
 ) {
+    val context = LocalContext.current
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -115,7 +120,17 @@ private fun PostContent(
             Text(
                 text = content.trim(),
                 style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier.padding(bottom = 16.dp)
+                modifier = Modifier
+                    .padding(bottom = 16.dp)
+                    .pointerInput(key1 = true) {
+                        detectTapGestures(
+                            onTap = {
+                                Toast
+                                    .makeText(context, "Tap Detected", Toast.LENGTH_SHORT)
+                                    .show()
+                            }
+                        )
+                    }
             )
         }
 
@@ -126,13 +141,13 @@ private fun PostContent(
             ) {
                 Button(
                     onClick = onPreviousClick,
-                    enabled = post.previousId != null
+                    enabled = post.previousId != "0"
                 ) {
                     Text("Previous")
                 }
                 Button(
                     onClick = onNextClick,
-                    enabled = post.nextId != null
+                    enabled = post.nextId != "0"
                 ) {
                     Text("Next")
                 }
