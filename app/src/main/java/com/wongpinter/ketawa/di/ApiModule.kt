@@ -39,7 +39,7 @@ object ApiModule {
                         Napier.v("HTTP Client Log", null, message)
                     }
                 }
-                level = LogLevel.HEADERS
+                level = LogLevel.ALL
             }
             install(ContentNegotiation) {
                 jackson()

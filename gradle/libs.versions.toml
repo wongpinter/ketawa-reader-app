@@ -2,6 +2,7 @@
 agp = "8.5.1"
 constraintlayout = "2.1.4"
 constraintlayoutCompose = "1.0.1"
+datastorePreferences = "1.1.1"
 gson = "2.10.1"
 hiltAndroid = "2.52"
 hiltAndroidCompiler = "2.51.1"
@@ -22,11 +23,13 @@ multidex = "2.0.1"
 napier = "2.7.1"
 navigationCompose = "2.7.7"
 slf4jApi = "2.0.13"
+uiTextGoogleFonts = "1.6.8"
 
 [libraries]
 androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "constraintlayout" }
 androidx-constraintlayout-compose = { module = "androidx.constraintlayout:constraintlayout-compose", version.ref = "constraintlayoutCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
 androidx-material-icons-core-android = { module = "androidx.compose.material:material-icons-core-android", version.ref = "materialIconsCoreAndroid" }
 androidx-multidex = { module = "androidx.multidex:multidex", version.ref = "multidex" }
@@ -52,6 +55,7 @@ logback-android = { module = "com.github.tony19:logback-android", version.ref = 
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logbackClassic" }
 napier = { module = "io.github.aakira:napier", version.ref = "napier" }
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4jApi" }
+androidx-ui-text-google-fonts = { group = "androidx.compose.ui", name = "ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

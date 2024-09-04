@@ -2,7 +2,6 @@ package com.wongpinter.ketawa.presentation.components
 
 import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
 import androidx.compose.runtime.Composable
@@ -11,6 +10,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
+import com.wongpinter.ketawa.presentation.ui.theme.onSecondaryContainerLight
+import com.wongpinter.ketawa.presentation.ui.theme.secondaryContainerLight
+import com.wongpinter.ketawa.presentation.ui.theme.secondaryDarkHighContrast
+import com.wongpinter.ketawa.presentation.ui.theme.secondaryLightHighContrast
 
 data class NavItem(
     val route: String,
@@ -28,7 +31,7 @@ fun NavigationBottomBar(
 
     BottomAppBar(
         modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.surfaceContainer
+        containerColor = onSecondaryContainerLight
     ) {
         items.forEach { item ->
             NavigationBarItem(
@@ -44,8 +47,9 @@ fun NavigationBottomBar(
                 },
                 alwaysShowLabel = false,
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.outline,
-                    unselectedIconColor = MaterialTheme.colorScheme.inversePrimary
+                    selectedIconColor = secondaryContainerLight,
+                    unselectedIconColor = secondaryDarkHighContrast,
+                    indicatorColor = secondaryLightHighContrast
                 )
             )
         }

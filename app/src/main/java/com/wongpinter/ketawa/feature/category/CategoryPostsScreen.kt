@@ -21,7 +21,6 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -32,7 +31,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.wongpinter.ketawa.domain.model.CategoryPosts
@@ -40,6 +38,9 @@ import com.wongpinter.ketawa.domain.model.PostTitle
 import com.wongpinter.ketawa.feature.post.ErrorMessage
 import com.wongpinter.ketawa.feature.post.LoadingIndicator
 import com.wongpinter.ketawa.presentation.components.TopbarUiState
+import com.wongpinter.ketawa.presentation.ui.theme.AppTypography
+import com.wongpinter.ketawa.presentation.ui.theme.onSecondaryDark
+import com.wongpinter.ketawa.presentation.ui.theme.onSurfaceVariantDarkMediumContrast
 import com.wongpinter.ketawa.utils.Resource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -89,8 +90,8 @@ private fun CategoryPostsContent(
     Column(modifier = Modifier.fillMaxSize()) {
         Text(
             text = "Total Posts: ${categoryPosts.dataCount}",
-            style = MaterialTheme.typography.titleSmall,
-            modifier = Modifier.padding(horizontal = 16.dp)
+            style = AppTypography.titleSmall,
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
         )
         LazyColumn(
             modifier = Modifier.weight(1f),
@@ -130,7 +131,7 @@ private fun PostTitleItem(
         Box(
             modifier = Modifier
                 .size(40.dp)
-                .background(MaterialTheme.colorScheme.onSecondary, shape = CircleShape),
+                .background(onSurfaceVariantDarkMediumContrast, shape = CircleShape),
             contentAlignment = Alignment.Center
         ) {
             val iconRes = if (post.postType == "CAT") {
@@ -142,12 +143,12 @@ private fun PostTitleItem(
                 imageVector = iconRes,
                 contentDescription = null,
                 modifier = Modifier.size(24.dp), // Adjust size as needed
-                tint = Color.White // You can change this color if needed
+                tint = onSecondaryDark // You can change this color if needed
             )
         }
         Text(
             text = post.content,
-            style = MaterialTheme.typography.bodyLarge,
+            style = AppTypography.bodyLarge,
             modifier = Modifier.padding(start = 16.dp)
         )
     }
@@ -170,14 +171,14 @@ private fun Pagination(
             onClick = { onPageChange(currentPage - 1) },
             enabled = currentPage > 1
         ) {
-            Text("Previous")
+            Text("Previous", style = AppTypography.labelMedium)
         }
-        Text("Page $currentPage of $totalPages")
+        Text("Page $currentPage of $totalPages", style = AppTypography.labelMedium)
         Button(
             onClick = { onPageChange(currentPage + 1) },
             enabled = currentPage < totalPages
         ) {
-            Text("Next")
+            Text("Next", style = AppTypography.labelMedium)
         }
     }
 }

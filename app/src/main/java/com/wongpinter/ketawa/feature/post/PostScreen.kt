@@ -4,6 +4,8 @@ import android.widget.Toast
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -11,7 +13,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.wongpinter.ketawa.domain.model.Post
 import com.wongpinter.ketawa.presentation.components.TopbarUiState
+import com.wongpinter.ketawa.presentation.ui.theme.AppTypography
 import com.wongpinter.ketawa.utils.Resource
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -86,72 +88,74 @@ private fun PostContent(
     onNextClick: () -> Unit
 ) {
     val context = LocalContext.current
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        item {
-            Text(
-                text = post.title,
-                style = MaterialTheme.typography.titleLarge,
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-            Text(
-                text = "Category: ${post.categoryName}",
-                style = MaterialTheme.typography.titleSmall,
-                modifier = Modifier.padding(bottom = 4.dp)
-            )
-            val textDate = SimpleDateFormat(
-                "MMM dd, yyyy",
-                Locale.getDefault()
-            ).format(post.postDate)
+    Column(modifier = Modifier.fillMaxSize()) {
+        LazyColumn(
+            modifier = Modifier
+                .weight(1f),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            item {
+                Text(
+                    text = post.title,
+                    style = AppTypography.titleLarge,
+                    modifier = Modifier.padding(bottom = 8.dp)
+                )
+                Text(
+                    text = "Category: ${post.categoryName}",
+                    style = AppTypography.titleSmall,
+                    modifier = Modifier.padding(bottom = 4.dp)
+                )
+                val textDate = SimpleDateFormat(
+                    "MMM dd, yyyy",
+                    Locale.getDefault()
+                ).format(post.postDate)
 
-            Text(
-                text = "By ${post.sender} on $textDate",
-                style = MaterialTheme.typography.labelSmall,
-                modifier = Modifier.padding(bottom = 16.dp)
-            )
-        }
+                Text(
+                    text = "By ${post.sender} on $textDate",
+                    style = AppTypography.labelSmall,
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
 
-        item {
-            val content = post.content.replace("<br />", "\n")
-            Text(
-                text = content.trim(),
-                style = MaterialTheme.typography.bodyLarge,
-                modifier = Modifier
-                    .padding(bottom = 16.dp)
-                    .pointerInput(key1 = true) {
-                        detectTapGestures(
-                            onTap = {
-                                Toast
-                                    .makeText(context, "Tap Detected", Toast.LENGTH_SHORT)
-                                    .show()
-                            }
-                        )
-                    }
-            )
-        }
-
-        item {
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Button(
-                    onClick = onPreviousClick,
-                    enabled = post.previousId != "0"
-                ) {
-                    Text("Previous")
-                }
-                Button(
-                    onClick = onNextClick,
-                    enabled = post.nextId != "0"
-                ) {
-                    Text("Next")
-                }
+                val content = post.content.replace("<br />", "\n")
+                Text(
+                    text = content.trim(),
+                    style = AppTypography.bodyLarge,
+                    modifier = Modifier
+                        .padding(bottom = 16.dp)
+                        .pointerInput(key1 = true) {
+                            detectTapGestures(
+                                onTap = {
+                                    Toast
+                                        .makeText(context, "Tap Detected", Toast.LENGTH_SHORT)
+                                        .show()
+                                }
+                            )
+                        }
+                )
             }
         }
+
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(10.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Button(
+                onClick = onPreviousClick,
+                enabled = post.previousId != "0"
+            ) {
+                Text("Previous")
+            }
+            Button(
+                onClick = onNextClick,
+                enabled = post.nextId != "0"
+            ) {
+                Text("Next")
+            }
+        }
+
     }
 }
