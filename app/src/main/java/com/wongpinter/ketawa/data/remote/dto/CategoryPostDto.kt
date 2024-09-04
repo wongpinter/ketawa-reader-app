@@ -1,18 +1,18 @@
 package com.wongpinter.ketawa.data.remote.dto
 
-import com.google.gson.annotations.SerializedName
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.wongpinter.ketawa.domain.model.CategoryPosts
 import com.wongpinter.ketawa.domain.model.PostTitle
 
 data class CategoryPostsDto(
-    @SerializedName("CatID") val categoryID: String,
-    @SerializedName("Category") val categoryName: String,
-    @SerializedName("DataCount") val dataCount: String,
-    @SerializedName("Page") val page: Int,
-    @SerializedName("PageCount") val pageCount: Int,
-    @SerializedName("PerPage") val perPage: Int,
-    @SerializedName("ListData") val posts: List<PostTitleDto>,
-    @SerializedName("fullURL") val postUrl: String
+    @JsonProperty("CatID") val categoryID: String,
+    @JsonProperty("Category") val categoryName: String,
+    @JsonProperty("DataCount") val dataCount: String,
+    @JsonProperty("Page") val page: Int,
+    @JsonProperty("PageCount") val pageCount: Int,
+    @JsonProperty("PerPage") val perPage: Int,
+    @JsonProperty("ListData") val posts: List<PostTitleDto>,
+    @JsonProperty("fullURL") val postUrl: String
 )
 
 fun CategoryPostsDto.toCategoryPosts() =
@@ -28,9 +28,9 @@ fun CategoryPostsDto.toCategoryPosts() =
     )
 
 data class PostTitleDto(
-    @SerializedName("DataID") val id: String,
-    @SerializedName("DataType") val type: String,
-    @SerializedName("Content") val content: String
+    @JsonProperty("DataID") val id: String,
+    @JsonProperty("DataType") val type: String,
+    @JsonProperty("Content") val content: String
 )
 
 fun PostTitleDto.toPostTitle() =

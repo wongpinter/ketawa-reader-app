@@ -4,6 +4,8 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import com.wongpinter.ketawa.presentation.components.NavigationScreen
+
 import com.wongpinter.ketawa.presentation.ui.theme.KetawaTheme
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -11,10 +13,10 @@ import dagger.hilt.android.AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        
         setContent {
             KetawaTheme {
-
+                NavigationScreen()
             }
         }
     }

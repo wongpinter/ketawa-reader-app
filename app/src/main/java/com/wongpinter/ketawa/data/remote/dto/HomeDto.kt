@@ -1,13 +1,13 @@
 package com.wongpinter.ketawa.data.remote.dto
 
-import com.google.gson.annotations.SerializedName
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.wongpinter.ketawa.domain.model.Home
 
 data class HomeDto(
-    @SerializedName("Data")
+    @JsonProperty(value = "Data")
     val data: List<PostDto>,
 
-    @SerializedName("fullURL")
+    @JsonProperty(value = "fullURL")
     val url: String
 )
 

@@ -1,21 +1,21 @@
 package com.wongpinter.ketawa.data.remote.dto
 
-import com.google.gson.annotations.SerializedName
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.wongpinter.ketawa.domain.model.Post
 import java.util.Date
 
 data class PostDto(
-    @SerializedName("DataID") val id: String,
-    @SerializedName("DataTitle") val title: String,
-    @SerializedName("PrevID") val previousId: String?,
-    @SerializedName("NextID") val nextId: String?,
-    @SerializedName("CategId") val categoryId: String,
-    @SerializedName("CategName") val categoryName: String,
-    @SerializedName("DataDate") val date: Date,
-    @SerializedName("DataNotes") val note: String?,
-    @SerializedName("DataSender") val sender: String,
-    @SerializedName("Content") val content: String,
-    @SerializedName("fullURL") val postUrl: String?
+    @JsonProperty("DataID") val id: String,
+    @JsonProperty("DataTitle") val title: String,
+    @JsonProperty("PrevID") val previousId: String?,
+    @JsonProperty("NextID") val nextId: String?,
+    @JsonProperty("CategId") val categoryId: String,
+    @JsonProperty("CategName") val categoryName: String,
+    @JsonProperty("DataDate") val date: Date,
+    @JsonProperty("DataNotes") val note: String?,
+    @JsonProperty("DataSender") val sender: String,
+    @JsonProperty("Content") val content: String,
+    @JsonProperty("fullURL") val postUrl: String?
 )
 
 fun PostDto.toPost() =

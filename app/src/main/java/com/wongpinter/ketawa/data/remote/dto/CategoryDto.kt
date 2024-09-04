@@ -1,11 +1,11 @@
 package com.wongpinter.ketawa.data.remote.dto
 
-import com.google.gson.annotations.SerializedName
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.wongpinter.ketawa.domain.model.Categories
 import com.wongpinter.ketawa.domain.model.Category
 
 data class CategoriesDto(
-    @SerializedName("Category")
+    @JsonProperty("Category")
     val category: List<CategoryDto>
 )
 
@@ -15,11 +15,11 @@ fun CategoriesDto.toCategories() =
     )
 
 data class CategoryDto(
-    @SerializedName("CatID")
+    @JsonProperty("CatID")
     val id: String,
-    @SerializedName("CatSub")
+    @JsonProperty("CatSub")
     val subCategory: String?,
-    @SerializedName("Content")
+    @JsonProperty("Content")
     val content: String
 )
 
