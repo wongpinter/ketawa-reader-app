@@ -1,6 +1,6 @@
 package com.wongpinter.ketawa.feature.category
 
-import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,7 +11,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
@@ -19,16 +24,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavHostController
-import com.wongpinter.ketawa.R
 import com.wongpinter.ketawa.domain.model.Categories
 import com.wongpinter.ketawa.domain.model.Category
 import com.wongpinter.ketawa.feature.post.ErrorMessage
 import com.wongpinter.ketawa.feature.post.LoadingIndicator
-import com.wongpinter.ketawa.presentation.ui.theme.Typography
 import com.wongpinter.ketawa.utils.Resource
 
 @Composable
@@ -85,17 +87,23 @@ private fun CategoryItem(
             .clickable { onClick() },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Image(
-            painter = painterResource(id = R.drawable.ic_category), // Replace with actual icon
-            contentDescription = null,
+        Box(
             modifier = Modifier
                 .size(40.dp)
-                .padding(end = 16.dp)
-        )
+                .background(MaterialTheme.colorScheme.onSecondary, shape = CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Rounded.Menu,
+                contentDescription = null,
+                modifier = Modifier.size(24.dp), // Adjust size as needed
+                tint = Color.White // You can change this color if needed
+            )
+        }
         Text(
             text = category.content,
-            style = Typography.bodyLarge,
-            color = Color.Black
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.padding(start = 16.dp)
         )
     }
 }

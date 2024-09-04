@@ -40,7 +40,6 @@ import com.wongpinter.ketawa.domain.model.PostTitle
 import com.wongpinter.ketawa.feature.post.ErrorMessage
 import com.wongpinter.ketawa.feature.post.LoadingIndicator
 import com.wongpinter.ketawa.presentation.components.TopbarUiState
-import com.wongpinter.ketawa.presentation.ui.theme.Typography
 import com.wongpinter.ketawa.utils.Resource
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -131,11 +130,11 @@ private fun PostTitleItem(
         Box(
             modifier = Modifier
                 .size(40.dp)
-                .background(MaterialTheme.colorScheme.secondary, shape = CircleShape),
+                .background(MaterialTheme.colorScheme.onSecondary, shape = CircleShape),
             contentAlignment = Alignment.Center
         ) {
             val iconRes = if (post.postType == "CAT") {
-                Icons.Rounded.Menu// Replace with actual icon
+                Icons.Rounded.Menu // Replace with actual icon
             } else {
                 Icons.Rounded.Face // Replace with actual icon
             }
@@ -148,8 +147,7 @@ private fun PostTitleItem(
         }
         Text(
             text = post.content,
-            style = Typography.bodyLarge,
-            color = Color.Black,
+            style = MaterialTheme.typography.bodyLarge,
             modifier = Modifier.padding(start = 16.dp)
         )
     }

@@ -5,6 +5,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.Home
+import androidx.compose.material.icons.rounded.Menu
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -19,7 +22,6 @@ import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.navigation.compose.rememberNavController
-import com.wongpinter.ketawa.R
 
 
 data class TopbarUiState(
@@ -92,8 +94,8 @@ fun NavigationScreen() {
                         .nestedScroll(nestedScrollConnection),
                     navController = navHostController,
                     items = listOf(
-                        NavItem(route = "home", icon = R.drawable.ic_home),
-                        NavItem(route = "categories", icon = R.drawable.ic_category)
+                        NavItem(route = "home", icon = Icons.Rounded.Home),
+                        NavItem(route = "categories", icon = Icons.Rounded.Menu)
                     )
                 )
             }
