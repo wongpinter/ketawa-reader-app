@@ -1,7 +1,5 @@
 package com.wongpinter.ketawa.domain.model
 
-import java.util.Date
-
 data class Post(
     val id: String,
     val title: String,
@@ -9,7 +7,7 @@ data class Post(
     val nextId: String?,
     val categoryId: String,
     val categoryName: String,
-    val postDate: Date,
+    val postDate: String,
     val note: String?,
     val sender: String,
     val content: String,

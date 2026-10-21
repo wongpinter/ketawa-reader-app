@@ -36,11 +36,16 @@ fun NavigatorHost(
                 TopbarUiState(
                     backButton = false,
                     title = "Ketawa.com",
-                    subtitle = "Latest Posts"
+                    subtitle = "Lelucon Terbaru"
                 )
             )
 
-            HomeScreen(viewModel = homeViewModel)
+            HomeScreen(
+                viewModel = homeViewModel,
+                onPostClick = { postId ->
+                    navHostController.navigate("post/$postId")
+                }
+            )
         }
 
         composable(route = "categories") {
@@ -48,7 +53,7 @@ fun NavigatorHost(
                 TopbarUiState(
                     backButton = false,
                     title = "Ketawa.com",
-                    subtitle = "Categories"
+                    subtitle = "Kategori Humor"
                 )
             )
 
@@ -61,7 +66,7 @@ fun NavigatorHost(
             updateTopBar(
                 TopbarUiState(
                     backButton = true,
-                    title = "Category Posts",
+                    title = "Kategori",
                     subtitle = ""
                 )
             )
@@ -74,8 +79,8 @@ fun NavigatorHost(
                 onPostClick = { postId ->
                     navHostController.navigate("post/$postId")
                 },
-                onCategoryClick = { postId ->
-                    navHostController.navigate("categoryPosts/$postId")
+                onCategoryClick = { subCatId ->
+                    navHostController.navigate("categoryPosts/$subCatId")
                 }
             )
         }
@@ -86,7 +91,7 @@ fun NavigatorHost(
             updateTopBar(
                 TopbarUiState(
                     backButton = true,
-                    title = "Post",
+                    title = "Baca Cerita",
                     subtitle = ""
                 )
             )

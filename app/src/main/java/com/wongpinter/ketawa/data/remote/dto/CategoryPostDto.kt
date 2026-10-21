@@ -1,18 +1,20 @@
 package com.wongpinter.ketawa.data.remote.dto
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.wongpinter.ketawa.domain.model.CategoryPosts
 import com.wongpinter.ketawa.domain.model.PostTitle
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class CategoryPostsDto(
-    @JsonProperty("CatID") val categoryID: String,
-    @JsonProperty("Category") val categoryName: String,
-    @JsonProperty("DataCount") val dataCount: String,
-    @JsonProperty("Page") val page: Int,
-    @JsonProperty("PageCount") val pageCount: Int,
-    @JsonProperty("PerPage") val perPage: Int,
-    @JsonProperty("ListData") val posts: List<PostTitleDto>,
-    @JsonProperty("fullURL") val postUrl: String
+    @SerialName("CatID") val categoryID: String = "",
+    @SerialName("Category") val categoryName: String = "",
+    @SerialName("DataCount") val dataCount: String = "0",
+    @SerialName("Page") val page: Int = 1,
+    @SerialName("PageCount") val pageCount: Int = 1,
+    @SerialName("PerPage") val perPage: Int = 20,
+    @SerialName("ListData") val posts: List<PostTitleDto> = emptyList(),
+    @SerialName("fullURL") val postUrl: String = ""
 )
 
 fun CategoryPostsDto.toCategoryPosts() =
@@ -27,15 +29,16 @@ fun CategoryPostsDto.toCategoryPosts() =
         postUrl = postUrl,
     )
 
+@Serializable
 data class PostTitleDto(
-    @JsonProperty("DataID") val id: String,
-    @JsonProperty("DataType") val type: String,
-    @JsonProperty("Content") val content: String
+    @SerialName("DataID") val id: String = "",
+    @SerialName("DataType") val type: String = "",
+    @SerialName("Content") val content: String = ""
 )
 
 fun PostTitleDto.toPostTitle() =
     PostTitle(
         postId = id,
-        content = content,
+        content = content.trim(),
         postType = type
     )

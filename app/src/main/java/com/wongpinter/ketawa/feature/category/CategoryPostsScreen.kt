@@ -1,26 +1,34 @@
 package com.wongpinter.ketawa.feature.category
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Face
-import androidx.compose.material.icons.rounded.Menu
-import androidx.compose.material3.Button
-import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
+import androidx.compose.material.icons.automirrored.rounded.KeyboardArrowRight
+import androidx.compose.material.icons.rounded.Folder
+import androidx.compose.material.icons.rounded.SentimentSatisfiedAlt
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledTonalButton
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -31,19 +39,18 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.wongpinter.ketawa.domain.model.CategoryPosts
 import com.wongpinter.ketawa.domain.model.PostTitle
 import com.wongpinter.ketawa.feature.post.ErrorMessage
 import com.wongpinter.ketawa.feature.post.LoadingIndicator
 import com.wongpinter.ketawa.presentation.components.TopbarUiState
-import com.wongpinter.ketawa.presentation.ui.theme.AppTypography
-import com.wongpinter.ketawa.presentation.ui.theme.onSecondaryDark
-import com.wongpinter.ketawa.presentation.ui.theme.onSurfaceVariantDarkMediumContrast
 import com.wongpinter.ketawa.utils.Resource
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CategoryPostsScreen(
     viewModel: CategoryPostViewModel = hiltViewModel(),
@@ -61,12 +68,11 @@ fun CategoryPostsScreen(
     }
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = Modifier.fillMaxSize()
     ) {
         when (val state = categoryPostsUiState) {
             is Resource.Loading -> LoadingIndicator()
-            is Resource.Error -> ErrorMessage(state.message ?: "An error occurred")
+            is Resource.Error -> ErrorMessage(state.message ?: "Gagal memuat lelucon")
             is Resource.Success -> state.data?.let {
                 updateTopBar(topBarUiState.copy(subtitle = state.data.category))
                 CategoryPostsContent(
@@ -88,97 +94,145 @@ private fun CategoryPostsContent(
     onPageChange: (Int) -> Unit
 ) {
     Column(modifier = Modifier.fillMaxSize()) {
-        Text(
-            text = "Total Posts: ${categoryPosts.dataCount}",
-            style = AppTypography.titleSmall,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 10.dp)
-        )
-        LazyColumn(
-            modifier = Modifier.weight(1f),
-            contentPadding = PaddingValues(16.dp)
+        Surface(
+            color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.45f),
+            modifier = Modifier.fillMaxWidth()
         ) {
-            items(categoryPosts.posts) { post ->
-                PostTitleItem(post, onPostClick, onCategoryClick)
-                HorizontalDivider()
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 6.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "${categoryPosts.category}  •  ${categoryPosts.dataCount} lelucon",
+                    style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.5.sp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             }
         }
-        Pagination(
-            currentPage = categoryPosts.page,
-            totalPages = categoryPosts.pageCount,
-            onPageChange = onPageChange
-        )
+
+        LazyColumn(
+            modifier = Modifier.weight(1f),
+            contentPadding = PaddingValues(horizontal = 14.dp, vertical = 10.dp),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(
+                items = categoryPosts.posts,
+                key = { it.postId }
+            ) { post ->
+                CompactPostTitleItem(post, onPostClick, onCategoryClick)
+            }
+        }
+
+        Surface(
+            tonalElevation = 3.dp,
+            color = MaterialTheme.colorScheme.surface
+        ) {
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 14.dp, vertical = 10.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                OutlinedButton(
+                    onClick = { onPageChange(categoryPosts.page - 1) },
+                    enabled = categoryPosts.page > 1,
+                    shape = RoundedCornerShape(10.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text("Hal ${categoryPosts.page - 1}", style = MaterialTheme.typography.labelMedium)
+                }
+
+                Text(
+                    text = "${categoryPosts.page} / ${categoryPosts.pageCount}",
+                    style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold, fontSize = 13.sp)
+                )
+
+                FilledTonalButton(
+                    onClick = { onPageChange(categoryPosts.page + 1) },
+                    enabled = categoryPosts.page < categoryPosts.pageCount,
+                    shape = RoundedCornerShape(10.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp),
+                    colors = ButtonDefaults.filledTonalButtonColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer,
+                        contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                    )
+                ) {
+                    Text("Hal ${categoryPosts.page + 1}", style = MaterialTheme.typography.labelMedium)
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
+                        contentDescription = null,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+        }
     }
 }
 
 @Composable
-private fun PostTitleItem(
+private fun CompactPostTitleItem(
     post: PostTitle,
     onPostClick: (String) -> Unit,
     onCategoryClick: (String) -> Unit
 ) {
-    var f = onPostClick
-    if (post.postType == "CAT") {
-        f = onCategoryClick
-    }
+    val isCat = post.postType == "CAT"
+    val clickAction = if (isCat) onCategoryClick else onPostClick
 
-    Row(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp)
-            .clickable { f(post.postId) },
-        verticalAlignment = Alignment.CenterVertically
+            .clip(RoundedCornerShape(10.dp))
+            .clickable { clickAction(post.postId) },
+        shape = RoundedCornerShape(10.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
-        Box(
+        Row(
             modifier = Modifier
-                .size(40.dp)
-                .background(onSurfaceVariantDarkMediumContrast, shape = CircleShape),
-            contentAlignment = Alignment.Center
+                .fillMaxWidth()
+                .padding(horizontal = 14.dp, vertical = 11.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            val iconRes = if (post.postType == "CAT") {
-                Icons.Rounded.Menu // Replace with actual icon
-            } else {
-                Icons.Rounded.Face // Replace with actual icon
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                modifier = Modifier.weight(1f)
+            ) {
+                Icon(
+                    imageVector = if (isCat) Icons.Rounded.Folder else Icons.Rounded.SentimentSatisfiedAlt,
+                    contentDescription = null,
+                    tint = if (isCat) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(10.dp))
+                Text(
+                    text = post.content,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 14.sp
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
             Icon(
-                imageVector = iconRes,
+                imageVector = Icons.AutoMirrored.Rounded.KeyboardArrowRight,
                 contentDescription = null,
-                modifier = Modifier.size(24.dp), // Adjust size as needed
-                tint = onSecondaryDark // You can change this color if needed
+                tint = MaterialTheme.colorScheme.outline,
+                modifier = Modifier.size(18.dp)
             )
-        }
-        Text(
-            text = post.content,
-            style = AppTypography.bodyLarge,
-            modifier = Modifier.padding(start = 16.dp)
-        )
-    }
-}
-
-@Composable
-private fun Pagination(
-    currentPage: Int,
-    totalPages: Int,
-    onPageChange: (Int) -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.SpaceBetween,
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Button(
-            onClick = { onPageChange(currentPage - 1) },
-            enabled = currentPage > 1
-        ) {
-            Text("Previous", style = AppTypography.labelMedium)
-        }
-        Text("Page $currentPage of $totalPages", style = AppTypography.labelMedium)
-        Button(
-            onClick = { onPageChange(currentPage + 1) },
-            enabled = currentPage < totalPages
-        ) {
-            Text("Next", style = AppTypography.labelMedium)
         }
     }
 }

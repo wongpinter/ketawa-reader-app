@@ -1,14 +1,16 @@
 package com.wongpinter.ketawa.data.remote.dto
 
-import com.fasterxml.jackson.annotation.JsonProperty
 import com.wongpinter.ketawa.domain.model.Home
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.Serializable
 
+@Serializable
 data class HomeDto(
-    @JsonProperty(value = "Data")
-    val data: List<PostDto>,
+    @SerialName("Data")
+    val data: List<PostDto> = emptyList(),
 
-    @JsonProperty(value = "fullURL")
-    val url: String
+    @SerialName("fullURL")
+    val url: String = ""
 )
 
 fun HomeDto.toHome() =

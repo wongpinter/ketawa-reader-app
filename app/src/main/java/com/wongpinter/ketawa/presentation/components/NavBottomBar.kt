@@ -1,22 +1,21 @@
 package com.wongpinter.ketawa.presentation.components
 
-import androidx.compose.material3.BottomAppBar
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.NavigationBar
 import androidx.compose.material3.NavigationBarItem
 import androidx.compose.material3.NavigationBarItemDefaults
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import androidx.navigation.compose.currentBackStackEntryAsState
-import com.wongpinter.ketawa.presentation.ui.theme.onSecondaryContainerLight
-import com.wongpinter.ketawa.presentation.ui.theme.secondaryContainerLight
-import com.wongpinter.ketawa.presentation.ui.theme.secondaryDarkHighContrast
-import com.wongpinter.ketawa.presentation.ui.theme.secondaryLightHighContrast
 
 data class NavItem(
     val route: String,
+    val title: String,
     val icon: ImageVector
 )
 
@@ -24,32 +23,45 @@ data class NavItem(
 fun NavigationBottomBar(
     navController: NavController,
     items: List<NavItem>,
-    modifier: Modifier
+    modifier: Modifier = Modifier
 ) {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
-    BottomAppBar(
+    NavigationBar(
         modifier = modifier,
-        containerColor = onSecondaryContainerLight
+        containerColor = MaterialTheme.colorScheme.surface,
+        contentColor = MaterialTheme.colorScheme.onSurface
     ) {
         items.forEach { item ->
+            val selected = currentRoute == item.route
             NavigationBarItem(
-                selected = currentRoute == item.route,
+                selected = selected,
                 onClick = {
-                    navController.navigate(item.route) {
-                        popUpTo(item.route) { inclusive = true } // Adjust this as needed
-                        launchSingleTop = true
+                    if (currentRoute != item.route) {
+                        navController.navigate(item.route) {
+                            popUpTo("home") { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
                     }
                 },
                 icon = {
-                    Icon(imageVector = item.icon, contentDescription = item.route)
+                    Icon(imageVector = item.icon, contentDescription = item.title)
                 },
-                alwaysShowLabel = false,
+                label = {
+                    Text(
+                        text = item.title,
+                        style = MaterialTheme.typography.labelSmall
+                    )
+                },
+                alwaysShowLabel = true,
                 colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = secondaryContainerLight,
-                    unselectedIconColor = secondaryDarkHighContrast,
-                    indicatorColor = secondaryLightHighContrast
+                    selectedIconColor = MaterialTheme.colorScheme.onPrimaryContainer,
+                    indicatorColor = MaterialTheme.colorScheme.primaryContainer,
+                    unselectedIconColor = MaterialTheme.colorScheme.onSurfaceVariant,
+                    selectedTextColor = MaterialTheme.colorScheme.primary,
+                    unselectedTextColor = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             )
         }
