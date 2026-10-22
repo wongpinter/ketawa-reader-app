@@ -28,11 +28,15 @@ android {
     signingConfigs {
         create("release") {
             val keystorePath = providers.gradleProperty("KETAWA_KEYSTORE_PATH").orNull
+                ?: System.getenv("KETAWA_KEYSTORE_PATH")
             if (!keystorePath.isNullOrBlank()) {
                 storeFile = file(keystorePath)
                 storePassword = providers.gradleProperty("KETAWA_KEYSTORE_PASSWORD").orNull
+                    ?: System.getenv("KETAWA_KEYSTORE_PASSWORD")
                 keyAlias = providers.gradleProperty("KETAWA_KEY_ALIAS").orNull
+                    ?: System.getenv("KETAWA_KEY_ALIAS")
                 keyPassword = providers.gradleProperty("KETAWA_KEY_PASSWORD").orNull
+                    ?: System.getenv("KETAWA_KEY_PASSWORD")
             }
         }
     }
