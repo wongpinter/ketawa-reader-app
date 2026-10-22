@@ -34,22 +34,25 @@ class JokeRepositoryImpl @Inject constructor(
 ) : JokeRepository {
 
     override fun getHome(): Flow<Resource<Home>> = flow {
-        emit(Resource.Loading())
+        // Cache-first: emit saved jokes immediately without waiting for network timeout
+        val cachedEntities = jokeDao.getAllJokesList()
+        if (cachedEntities.isNotEmpty()) {
+            val cachedHome = Home(
+                url = "https://www.ketawa.com/",
+                data = cachedEntities.map { it.toPost() }
+            )
+            emit(Resource.Success(cachedHome))
+        } else {
+            emit(Resource.Loading())
+        }
+
         try {
             val remoteHome = client.get("https://api.ketawa.com/json-index").body<HomeDto>().toHome()
             // Auto-cache latest jokes into Room
             jokeDao.insertJokes(remoteHome.data.map { it.toEntity() })
             emit(Resource.Success(remoteHome))
         } catch (e: Exception) {
-            // Offline fallback: load from Room
-            val cachedEntities = jokeDao.getAllJokes().firstOrNull() ?: emptyList()
-            if (cachedEntities.isNotEmpty()) {
-                val cachedHome = Home(
-                    url = "https://www.ketawa.com/",
-                    data = cachedEntities.map { it.toPost() }
-                )
-                emit(Resource.Success(cachedHome))
-            } else {
+            if (cachedEntities.isEmpty()) {
                 emit(Resource.Error("Mode offline: Tidak ada cerita tersimpan"))
             }
         }
@@ -74,6 +77,20 @@ class JokeRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun prefetchJoke(postId: String): Post? {
+        if (postId.isBlank() || postId == "0") return null
+        val cached = jokeDao.getJokeByIdOnce(postId)
+        if (cached != null) return cached.toPost()
+
+        return try {
+            val remotePost = client.get("/json-detail-$postId").body<PostDto>().toPost()
+            jokeDao.insertJoke(remotePost.toEntity())
+            remotePost
+        } catch (e: Exception) {
+            null
+        }
+    }
+
     override fun getCategories(): Flow<Resource<Categories>> = flow {
         emit(Resource.Loading())
         try {
@@ -85,35 +102,38 @@ class JokeRepositoryImpl @Inject constructor(
     }
 
     override fun getCategoryPosts(categoryId: String, page: Int): Flow<Resource<CategoryPosts>> = flow {
-        emit(Resource.Loading())
+        // Cache-first: emit offline category jokes if available
+        val cachedInCat = jokeDao.getJokesByCategoryList(categoryId)
+        if (cachedInCat.isNotEmpty()) {
+            emit(
+                Resource.Success(
+                    CategoryPosts(
+                        id = categoryId,
+                        category = cachedInCat.first().categoryName,
+                        dataCount = cachedInCat.size.toString(),
+                        page = 1,
+                        pageCount = 1,
+                        perPage = cachedInCat.size,
+                        posts = cachedInCat.map {
+                            com.wongpinter.ketawa.domain.model.PostTitle(
+                                content = it.title,
+                                postId = it.id,
+                                postType = "DETAIL"
+                            )
+                        },
+                        postUrl = ""
+                    )
+                )
+            )
+        } else {
+            emit(Resource.Loading())
+        }
+
         try {
             val result = client.get("/json-cat-$categoryId-$page").body<CategoryPostsDto>().toCategoryPosts()
             emit(Resource.Success(result))
         } catch (e: Exception) {
-            // Fallback to offline cached jokes under this category
-            val cachedInCat = jokeDao.getJokesByCategory(categoryId).firstOrNull() ?: emptyList()
-            if (cachedInCat.isNotEmpty()) {
-                emit(
-                    Resource.Success(
-                        CategoryPosts(
-                            id = categoryId,
-                            category = cachedInCat.first().categoryName,
-                            dataCount = cachedInCat.size.toString(),
-                            page = 1,
-                            pageCount = 1,
-                            perPage = cachedInCat.size,
-                            posts = cachedInCat.map {
-                                com.wongpinter.ketawa.domain.model.PostTitle(
-                                    content = it.title,
-                                    postId = it.id,
-                                    postType = "DETAIL"
-                                )
-                            },
-                            postUrl = ""
-                        )
-                    )
-                )
-            } else {
+            if (cachedInCat.isEmpty()) {
                 emit(Resource.Error("Mode offline: Kategori belum diunduh"))
             }
         }

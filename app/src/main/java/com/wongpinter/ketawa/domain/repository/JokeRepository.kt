@@ -15,4 +15,5 @@ interface JokeRepository {
     fun getOfflineJokes(): Flow<List<Post>>
     fun getOfflineJokeCount(): Flow<Int>
     suspend fun downloadCategoryJokes(categoryId: String, maxPages: Int = 3): Flow<Resource<Int>>
+    suspend fun prefetchJoke(postId: String): Post?
 }

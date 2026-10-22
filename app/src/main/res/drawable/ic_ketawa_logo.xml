@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:aapt="http://schemas.android.com/aapt"
+    android:width="48dp"
+    android:height="48dp"
+    android:viewportWidth="48"
+    android:viewportHeight="48">
+
+    <!-- Rounded emblem background -->
+    <path
+        android:pathData="M24,2 C36.15,2 46,11.85 46,24 C46,36.15 36.15,46 24,46 C11.85,46 2,36.15 2,24 C2,11.85 11.85,2 24,2 Z">
+        <aapt:attr name="android:fillColor">
+            <gradient
+                android:startX="24"
+                android:startY="2"
+                android:endX="24"
+                android:endY="46"
+                android:type="linear">
+                <item android:offset="0.0" android:color="#FA8A1E" />
+                <item android:offset="1.0" android:color="#C84B31" />
+            </gradient>
+        </aapt:attr>
+    </path>
+
+    <!-- Joyful squinting eyes (scaled to 48dp canvas, center at 24,24) -->
+    <path
+        android:pathData="M15.5,20.5 C16.5,17 21,17 22,20.5"
+        android:strokeWidth="2.2"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round" />
+
+    <path
+        android:pathData="M26,20.5 C27,17 31.5,17 32.5,20.5"
+        android:strokeWidth="2.2"
+        android:strokeColor="#FFFFFF"
+        android:strokeLineCap="round" />
+
+    <!-- Open laughing mouth -->
+    <path
+        android:pathData="M15,25 C19.5,26.5 28.5,26.5 33,25 C33,35 15,35 15,25 Z"
+        android:fillColor="#FFFFFF" />
+
+    <!-- Tongue -->
+    <path
+        android:pathData="M20,31.5 C21.5,29.5 26.5,29.5 28,31.5 C26.5,35 21.5,35 20,31.5 Z"
+        android:fillColor="#FF7864" />
+
+</vector>

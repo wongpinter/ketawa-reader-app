@@ -12,6 +12,9 @@ interface JokeDao {
     @Query("SELECT * FROM jokes ORDER BY downloadedAt DESC")
     fun getAllJokes(): Flow<List<JokeEntity>>
 
+    @Query("SELECT * FROM jokes ORDER BY downloadedAt DESC")
+    suspend fun getAllJokesList(): List<JokeEntity>
+
     @Query("SELECT * FROM jokes WHERE id = :id LIMIT 1")
     fun getJokeById(id: String): Flow<JokeEntity?>
 
@@ -20,6 +23,9 @@ interface JokeDao {
 
     @Query("SELECT * FROM jokes WHERE categoryId = :categoryId ORDER BY downloadedAt DESC")
     fun getJokesByCategory(categoryId: String): Flow<List<JokeEntity>>
+
+    @Query("SELECT * FROM jokes WHERE categoryId = :categoryId ORDER BY downloadedAt DESC")
+    suspend fun getJokesByCategoryList(categoryId: String): List<JokeEntity>
 
     @Query("SELECT * FROM jokes WHERE isBookmarked = 1 ORDER BY downloadedAt DESC")
     fun getBookmarkedJokes(): Flow<List<JokeEntity>>

@@ -21,6 +21,7 @@ fun NavigatorHost(
     navHostController: NavHostController,
     updateTopBar: (TopbarUiState) -> Unit,
     topbarUiState: TopbarUiState,
+    onToggleBottomBar: () -> Unit = {},
     homeViewModel: HomeViewModel = hiltViewModel(),
     categoriesViewModel: CategoriesViewModel = hiltViewModel(),
     categoryPostViewModel: CategoryPostViewModel = hiltViewModel(),
@@ -35,8 +36,9 @@ fun NavigatorHost(
             updateTopBar(
                 TopbarUiState(
                     backButton = false,
-                    title = "Ketawa.com",
-                    subtitle = "Lelucon Terbaru"
+                    showLogo = true,
+                    titleRes = com.wongpinter.ketawa.R.string.app_brand,
+                    subtitleRes = com.wongpinter.ketawa.R.string.nav_latest
                 )
             )
 
@@ -52,8 +54,9 @@ fun NavigatorHost(
             updateTopBar(
                 TopbarUiState(
                     backButton = false,
-                    title = "Ketawa.com",
-                    subtitle = "Kategori Humor"
+                    showLogo = true,
+                    titleRes = com.wongpinter.ketawa.R.string.app_brand,
+                    subtitleRes = com.wongpinter.ketawa.R.string.categories_title
                 )
             )
 
@@ -66,8 +69,8 @@ fun NavigatorHost(
             updateTopBar(
                 TopbarUiState(
                     backButton = true,
-                    title = "Kategori",
-                    subtitle = ""
+                    titleRes = com.wongpinter.ketawa.R.string.nav_categories,
+                    subtitleString = ""
                 )
             )
 
@@ -91,8 +94,8 @@ fun NavigatorHost(
             updateTopBar(
                 TopbarUiState(
                     backButton = true,
-                    title = "Baca Cerita",
-                    subtitle = ""
+                    titleRes = com.wongpinter.ketawa.R.string.read_story,
+                    subtitleString = ""
                 )
             )
 
@@ -101,7 +104,21 @@ fun NavigatorHost(
                 viewModel = postViewModel,
                 updateTopBar = updateTopBar,
                 topBarUiState = topbarUiState,
+                onScreenTap = onToggleBottomBar
             )
+        }
+
+        composable(route = "settings") {
+            updateTopBar(
+                TopbarUiState(
+                    backButton = false,
+                    showLogo = true,
+                    titleRes = com.wongpinter.ketawa.R.string.app_brand,
+                    subtitleRes = com.wongpinter.ketawa.R.string.settings_title
+                )
+            )
+
+            com.wongpinter.ketawa.feature.settings.SettingsScreen()
         }
     }
 }

@@ -4,7 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.wongpinter.ketawa.data.local.UserPreferences
 import com.wongpinter.ketawa.domain.model.Post
-import com.wongpinter.ketawa.domain.remote.ApiService
+import com.wongpinter.ketawa.domain.repository.JokeRepository
 import com.wongpinter.ketawa.utils.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,7 +18,7 @@ import javax.inject.Inject
 
 @HiltViewModel
 class PostViewModel @Inject constructor(
-    private val apiService: ApiService,
+    private val jokeRepository: JokeRepository,
     private val userPreferences: UserPreferences
 ) : ViewModel() {
     private val _postState = MutableStateFlow<Resource<Post>>(Resource.Loading())
@@ -33,9 +33,38 @@ class PostViewModel @Inject constructor(
     fun getPost(postId: String) {
         _postState.value = Resource.Loading()
         viewModelScope.launch {
-            apiService.getPost(postId).onEach { result ->
+            jokeRepository.getPost(postId).onEach { result ->
                 _postState.value = result
+                if (result is Resource.Success && result.data != null) {
+                    val post = result.data
+                    userPreferences.markAsRead(post.id)
+                    userPreferences.setLastReadPost(post.id, post.title, post.categoryName)
+                    prefetchNeighbors(post)
+                }
             }.launchIn(this)
+        }
+    }
+
+    private fun prefetchNeighbors(post: Post) {
+        viewModelScope.launch {
+            // 1. Prefetch next joke
+            val nextId = post.nextId
+            var secondNextId: String? = null
+            if (!nextId.isNullOrBlank() && nextId != "0") {
+                val nextPost = jokeRepository.prefetchJoke(nextId)
+                secondNextId = nextPost?.nextId
+            }
+
+            // 2. Prefetch 2nd next joke
+            if (!secondNextId.isNullOrBlank() && secondNextId != "0") {
+                jokeRepository.prefetchJoke(secondNextId)
+            }
+
+            // 3. Prefetch previous joke for instant backward navigation
+            val prevId = post.previousId
+            if (!prevId.isNullOrBlank() && prevId != "0") {
+                jokeRepository.prefetchJoke(prevId)
+            }
         }
     }
 

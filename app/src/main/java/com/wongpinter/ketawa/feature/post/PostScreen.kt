@@ -6,6 +6,8 @@ import android.content.Context
 import android.content.Intent
 import android.widget.Toast
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -41,6 +43,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -57,7 +60,8 @@ fun PostScreen(
     postId: String,
     viewModel: PostViewModel = hiltViewModel(),
     updateTopBar: (TopbarUiState) -> Unit,
-    topBarUiState: TopbarUiState
+    topBarUiState: TopbarUiState,
+    onScreenTap: () -> Unit = {}
 ) {
     val postUiState by viewModel.postUiState.collectAsState()
     val bookmarks by viewModel.bookmarks.collectAsState()
@@ -74,12 +78,14 @@ fun PostScreen(
     ) {
         when (val state = postUiState) {
             is Resource.Loading -> LoadingIndicator()
-            is Resource.Error -> ErrorMessage(state.message ?: "Gagal memuat cerita")
+            is Resource.Error -> ErrorMessage(state.message ?: androidx.compose.ui.res.stringResource(com.wongpinter.ketawa.R.string.error_loading_story))
             is Resource.Success -> state.data?.let { post ->
                 updateTopBar(
                     topBarUiState.copy(
-                        title = "Baca Cerita",
-                        subtitle = post.title
+                        titleRes = com.wongpinter.ketawa.R.string.read_story,
+                        titleString = null,
+                        subtitleString = post.title,
+                        subtitleRes = null
                     )
                 )
                 PostContent(
@@ -96,7 +102,8 @@ fun PostScreen(
                         viewModel.setFontScale(nextScale)
                     },
                     onPreviousClick = viewModel::getPreviousPost,
-                    onNextClick = viewModel::getNextPost
+                    onNextClick = viewModel::getNextPost,
+                    onScreenTap = onScreenTap
                 )
             }
         }
@@ -139,7 +146,8 @@ private fun PostContent(
     onToggleBookmark: () -> Unit,
     onCycleFontScale: () -> Unit,
     onPreviousClick: () -> Unit,
-    onNextClick: () -> Unit
+    onNextClick: () -> Unit,
+    onScreenTap: () -> Unit = {}
 ) {
     val context = LocalContext.current
 
@@ -149,11 +157,22 @@ private fun PostContent(
         else -> Pair(15.5.sp, 24.sp) // medium
     }
 
-    Column(modifier = Modifier.fillMaxSize()) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .clickable(
+                interactionSource = remember { MutableInteractionSource() },
+                indication = null
+            ) { onScreenTap() }
+    ) {
         LazyColumn(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxWidth(),
+                .fillMaxWidth()
+                .clickable(
+                    interactionSource = remember { MutableInteractionSource() },
+                    indication = null
+                ) { onScreenTap() },
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 14.dp)
         ) {
             item {
@@ -176,12 +195,20 @@ private fun PostContent(
 
                     Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
                         IconButton(
-                            onClick = onCycleFontScale,
+                            onClick = {
+                                onCycleFontScale()
+                                val nextScale = when (fontScale) {
+                                    "small" -> context.getString(com.wongpinter.ketawa.R.string.font_size_medium)
+                                    "medium" -> context.getString(com.wongpinter.ketawa.R.string.font_size_large)
+                                    else -> context.getString(com.wongpinter.ketawa.R.string.font_size_small)
+                                }
+                                Toast.makeText(context, "${context.getString(com.wongpinter.ketawa.R.string.font_size)}: $nextScale", Toast.LENGTH_SHORT).show()
+                            },
                             modifier = Modifier.size(36.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.FormatSize,
-                                contentDescription = "Ubah Ukuran Teks",
+                                contentDescription = androidx.compose.ui.res.stringResource(com.wongpinter.ketawa.R.string.font_size),
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(19.dp)
                             )
@@ -190,14 +217,18 @@ private fun PostContent(
                         IconButton(
                             onClick = {
                                 onToggleBookmark()
-                                val msg = if (isBookmarked) "Dihapus dari simpanan" else "Disimpan ke favorit"
+                                val msg = if (isBookmarked) {
+                                    context.getString(com.wongpinter.ketawa.R.string.bookmark)
+                                } else {
+                                    context.getString(com.wongpinter.ketawa.R.string.bookmarked)
+                                }
                                 Toast.makeText(context, msg, Toast.LENGTH_SHORT).show()
                             },
                             modifier = Modifier.size(36.dp)
                         ) {
                             Icon(
                                 imageVector = if (isBookmarked) Icons.Rounded.Bookmark else Icons.Rounded.BookmarkBorder,
-                                contentDescription = "Simpan Cerita",
+                                contentDescription = androidx.compose.ui.res.stringResource(com.wongpinter.ketawa.R.string.bookmark),
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(19.dp)
                             )
@@ -208,13 +239,13 @@ private fun PostContent(
                                 val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
                                 val clip = ClipData.newPlainText("Humor Ketawa", "${post.title}\n\n${post.content}")
                                 clipboard.setPrimaryClip(clip)
-                                Toast.makeText(context, "Disalin", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, context.getString(com.wongpinter.ketawa.R.string.copied_to_clipboard), Toast.LENGTH_SHORT).show()
                             },
                             modifier = Modifier.size(36.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.ContentCopy,
-                                contentDescription = "Salin Teks",
+                                contentDescription = androidx.compose.ui.res.stringResource(com.wongpinter.ketawa.R.string.copy),
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
                             )
@@ -226,17 +257,17 @@ private fun PostContent(
                                     action = Intent.ACTION_SEND
                                     putExtra(
                                         Intent.EXTRA_TEXT,
-                                        "${post.title}\n\n${post.content}\n\n(Sumber: ketawa.com)"
+                                        "${post.title}\n\n${post.content}\n\n(${context.getString(com.wongpinter.ketawa.R.string.source_credit)})"
                                     )
                                     type = "text/plain"
                                 }
-                                context.startActivity(Intent.createChooser(sendIntent, "Bagikan"))
+                                context.startActivity(Intent.createChooser(sendIntent, context.getString(com.wongpinter.ketawa.R.string.share)))
                             },
                             modifier = Modifier.size(36.dp)
                         ) {
                             Icon(
                                 imageVector = Icons.Rounded.Share,
-                                contentDescription = "Bagikan",
+                                contentDescription = androidx.compose.ui.res.stringResource(com.wongpinter.ketawa.R.string.share),
                                 tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(18.dp)
                             )
@@ -259,8 +290,9 @@ private fun PostContent(
                 Spacer(modifier = Modifier.height(6.dp))
 
                 Row(verticalAlignment = Alignment.CenterVertically) {
+                    val authorName = post.sender.ifBlank { androidx.compose.ui.res.stringResource(com.wongpinter.ketawa.R.string.anonymous) }
                     Text(
-                        text = "Pengirim: ${post.sender.ifBlank { "Anonim" }}",
+                        text = androidx.compose.ui.res.stringResource(com.wongpinter.ketawa.R.string.by_author, authorName),
                         style = MaterialTheme.typography.labelSmall.copy(fontSize = 11.5.sp),
                         color = MaterialTheme.colorScheme.outline
                     )
@@ -277,7 +309,12 @@ private fun PostContent(
                 Spacer(modifier = Modifier.height(14.dp))
 
                 Surface(
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(
+                            interactionSource = remember { MutableInteractionSource() },
+                            indication = null
+                        ) { onScreenTap() },
                     shape = RoundedCornerShape(14.dp),
                     color = MaterialTheme.colorScheme.surface,
                     tonalElevation = 1.dp
@@ -319,7 +356,7 @@ private fun PostContent(
                         modifier = Modifier.size(16.dp)
                     )
                     Spacer(modifier = Modifier.width(4.dp))
-                    Text("Sebelumnya", style = MaterialTheme.typography.labelMedium)
+                    Text(androidx.compose.ui.res.stringResource(com.wongpinter.ketawa.R.string.previous), style = MaterialTheme.typography.labelMedium)
                 }
 
                 Button(
@@ -331,7 +368,7 @@ private fun PostContent(
                         containerColor = MaterialTheme.colorScheme.primary
                     )
                 ) {
-                    Text("Berikutnya", style = MaterialTheme.typography.labelMedium)
+                    Text(androidx.compose.ui.res.stringResource(com.wongpinter.ketawa.R.string.next), style = MaterialTheme.typography.labelMedium)
                     Spacer(modifier = Modifier.width(4.dp))
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
