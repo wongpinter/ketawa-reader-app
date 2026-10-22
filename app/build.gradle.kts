@@ -25,8 +25,24 @@ android {
         }
     }
 
+    signingConfigs {
+        create("release") {
+            val keystorePath = providers.gradleProperty("KETAWA_KEYSTORE_PATH").orNull
+            if (!keystorePath.isNullOrBlank()) {
+                storeFile = file(keystorePath)
+                storePassword = providers.gradleProperty("KETAWA_KEYSTORE_PASSWORD").orNull
+                keyAlias = providers.gradleProperty("KETAWA_KEY_ALIAS").orNull
+                keyPassword = providers.gradleProperty("KETAWA_KEY_PASSWORD").orNull
+            }
+        }
+    }
+
     buildTypes {
         release {
+            val releaseSigning = signingConfigs.getByName("release")
+            if (releaseSigning.storeFile != null && releaseSigning.storeFile!!.exists()) {
+                signingConfig = releaseSigning
+            }
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
