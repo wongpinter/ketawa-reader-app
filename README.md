@@ -147,31 +147,6 @@ app/
 
 ---
 
-## Headless Emulator Setup (Redroid)
-
-For headless CI/CD or Linux cloud virtual machines (e.g. Azure without hardware GPU/KVM):
-
-```bash
-# 1. Load kernel binder module
-sudo modprobe binder_linux
-
-# 2. Run Redroid container with guest software rendering (SwiftShader)
-docker run -itd --privileged \
-  --restart unless-stopped \
-  -v /mnt/redroid-data:/data \
-  -p 127.0.0.1:5555:5555 \
-  --name redroid \
-  redroid/redroid:12.0.0-latest \
-  androidboot.redroid_gpu_mode=guest \
-  androidboot.use_memfd=1
-
-# 3. Connect ADB
-adb connect 127.0.0.1:5555
-adb wait-for-device shell getprop sys.boot_completed
-```
-
----
-
 ## API Endpoints Used
 
 Powered by the public endpoints at `https://api.ketawa.com`:
